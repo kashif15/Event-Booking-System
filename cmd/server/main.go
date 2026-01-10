@@ -1,7 +1,9 @@
 package main
 
 import (
+	"event-booking-api/internal/routes"
 	"event-booking-api/pkg/config"
+	"event-booking-api/pkg/database"
 
 	"github.com/gin-gonic/gin"
 )
@@ -9,14 +11,12 @@ import (
 func main() {
 
 	config.Load()
+	database.Connect()
 
-	r := gin.Default()
+	router := gin.Default()
 
-	r.GET("/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{"status": "ok"})
-	})
-
+	routes.Register(router)
+	
 	port := config.Get("APP_PORT")
-
-	r.Run(":" + port)
+	router.Run(":" + port)
 }

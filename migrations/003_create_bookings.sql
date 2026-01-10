@@ -1,0 +1,8 @@
+CREATE TABLE bookings (
+	id SERIAL PRIMARY KEY,
+	user_id INT REFERENCES users(id) ON DELETE CASCADE,
+	event_id INT REFERENCES events(id) ON DELETE CASCADE,
+	status VARCHAR(20) DEFAULT 'CONFIRMED',
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	UNIQUE(user_id, event_id)
+);

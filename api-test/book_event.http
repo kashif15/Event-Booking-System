@@ -1,0 +1,2 @@
+POST http://localhost:8080/events/1/book
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Njc5NzMwMTIsInJvbGUiOiJVU0VSIiwidXNlcl9pZCI6MX0.1fiEf7glZHXHo4aXpCNsaZtEp9ZlMrdHVwrBJiEBkoQ

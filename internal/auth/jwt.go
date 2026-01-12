@@ -4,16 +4,16 @@ import (
 	"errors"
 	"event-booking-api/pkg/config"
 	"time"
-
+	"github.com/google/uuid"
 	"github.com/golang-jwt/jwt/v5"
 )
 
 func GenerateToken(userId int64, role string) (string, error) {
 
 	claims := jwt.MapClaims{
-		"user_id" : userId,
-		"role" : role,
-		"exp":     time.Now().Add(time.Hour * 24).Unix(),
+		"user_id": userId,
+		"role":    role,
+		"exp":     time.Now().Add(15 * time.Minute).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -57,4 +57,8 @@ func ValidateToken(tokenString string) (jwt.MapClaims, error) {
 
 	return claims, nil
 
+}
+
+func GenerateRefreshToken() string {
+	return uuid.NewString()
 }

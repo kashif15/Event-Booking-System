@@ -1,8 +1,11 @@
-POST http://localhost:8080/auth/login
+POST http://localhost:8080/auth/refresh
 Content-Type: application/json
 
-
 {
-  "email": "kashif@example.com",
-  "password": "secret123"
+  "refresh_token": "f598dfae-df24-45e9-a9d4-3cb852a8c536"
 }
+
+# {
+#   "email": "kashif@example.com",
+#   "password": "secret123"
+# }

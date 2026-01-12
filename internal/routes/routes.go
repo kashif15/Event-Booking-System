@@ -18,6 +18,10 @@ func Register(router *gin.Engine) {
 	router.POST("/auth/register", auth.RegisterHandler)
 	router.POST("/auth/login", auth.LoginHandler)
 
+	router.POST("/auth/refresh", auth.RefreshHandler)
+	router.POST("/auth/logout", auth.LogoutHandler)
+
+
 	auth := router.Group("/")
 	auth.Use(middleware.Authenticate())
 

@@ -1,8 +1,10 @@
 package auth
 
 import (
-	
+	"event-booking-api/internal/user"
 	"net/http"
+
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,10 +16,16 @@ type registerRequest struct {
 	Password string `json:"password" binding:"required,min=6"`
 }
 
+
 type loginRequest struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required"`
 }
+
+type refreshRequest struct {
+	RefreshToken string `json:"refresh_token" binding:"required"`
+}
+
 
 func RegisterHandler(c *gin.Context) {
 	var req registerRequest
@@ -77,7 +85,7 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 
-	token, err := GenerateToken(user.ID, user.Role)
+	accessToken, err := GenerateToken(user.ID, user.Role)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -86,10 +94,72 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 
+	refereshToken := GenerateRefreshToken()
+	expiresAt := time.Now().Add(7 * 24 * time.Hour)
+
+	err = SaveRefreshToken(user.ID, refereshToken, expiresAt)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	
 	c.JSON(http.StatusCreated, gin.H{
 		"user":  user,
-		"token": token,
+		"access_token": accessToken,
+		"refresh_token": refereshToken,
 	})
 
+
+}
+
+func RefreshHandler(c *gin.Context) {
+	var req refreshRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+
+	rt, err := GetRefreshToken(req.RefreshToken)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := user.GetByID(rt.UserID)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not found"})
+		return
+	}
+
+	newAccessToken, _ := GenerateToken(user.ID, user.Role)
+
+	c.JSON(http.StatusOK, gin.H{
+		"access_token": newAccessToken,
+	})
+}
+
+func LogoutHandler(c *gin.Context) {
+	var req refreshRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+
+	err := DeleteRefreshToken(req.RefreshToken)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "logged out"})
 
 }

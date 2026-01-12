@@ -94,7 +94,7 @@ migrations/             # SQL migrations
 
 ### 1️⃣ Clone the Repository
 ```bash
-git clone https://github.com/your-username/event-booking-api.git
+git clone https://github.com/kashif15/event-booking-api.git
 cd event-booking-api
 ```
 
